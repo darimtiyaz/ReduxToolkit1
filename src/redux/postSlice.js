@@ -1,30 +1,36 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 export const getPosts = createAsyncThunk("posts/fetchPosts", async () => {
-  return fetch(`https://jsonplaceholder.typicode.com/posts`).then((res) =>
-    res.json()
+  const response = await fetch(`https://jsonplaceholder.typicode.com/posts`);
+  if(response.ok){
+    return response.json()
+  }}
   );
-});
 
 export const getPost = createAsyncThunk("posts/fetchPost", async ({ id }) => {
-  return fetch(`https://jsonplaceholder.typicode.com/posts/${id}`).then((res) =>
-    res.json()
+  const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`);
+  if(response.ok){
+   return response.json()
+  }}
   );
-});
 
 export const deletePost = createAsyncThunk(
   "posts/deletePosts",
-  async ({ id }) => {
-    return fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
+  async ({ id, dispatch }) => {
+    const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
       method: "DELETE",
-    }).then((res) => res.json());
+    });
+    if(response.ok){
+      dispatch(getPosts())
+      //return response.json();
+    }
   }
 );
 
 export const createPost = createAsyncThunk(
   "posts/createPost",
   async ({ data }) => {
-    return fetch(`https://jsonplaceholder.typicode.com/posts/`, {
+    const response = await fetch(`https://jsonplaceholder.typicode.com/posts/`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -34,14 +40,17 @@ export const createPost = createAsyncThunk(
         title: data.title,
         body: data.body,
       }),
-    }).then((res) => res.json());
+    });
+    if(response.ok){
+      return response.json;
+    }
   }
 );
 
 export const updatePost = createAsyncThunk(
   "posts/updatePost",
   async ({ id, title, body }) => {
-    return fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
+    const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
       method: "PUT",
       headers: {
         Accept: "application/json",
@@ -51,72 +60,75 @@ export const updatePost = createAsyncThunk(
         title,
         body
       }),
-    }).then((res) => res.json());
+    });
+    if(response.ok){
+      return response.json();
+    }
   }
 );
 
 const postSlice = createSlice({
-  name: "post",
+  name: "posts",
   initialState: {
     posts: [],
     loading: false,
-    post: [],
   },
-  extraReducers: {
-    [getPosts.pending]: (state, action) => {
+  extraReducers: builder =>{
+    builder
+    .addCase(getPosts.pending, (state, action) => {
       state.loading = true;
-    },
-    [getPosts.fulfilled]: (state, action) => {
+    })
+    .addCase(getPosts.fulfilled, (state, action) => {
       state.loading = false;
       state.posts = action.payload;
-    },
-    [getPosts.rejected]: (state, action) => {
+    })
+    .addCase(getPosts.rejected, (state, action) => {
       state.loading = false;
-    },
-    [deletePost.pending]: (state, action) => {
+    })
+    .addCase(deletePost.pending, (state, action) => {
       state.loading = true;
-    },
-    [deletePost.fulfilled]: (state, action) => {
+    })
+    .addCase(deletePost.fulfilled, (state, action) => {
+      state.loading = false;
+      //state.posts = action.payload;
+    })
+    .addCase(deletePost.rejected, (state, action) => {
+      state.loading = false;
+    })
+
+    .addCase(getPost.pending, (state, action) => {
+      state.loading = true;
+    })
+    .addCase(getPost.fulfilled, (state, action) => {
       state.loading = false;
       state.posts = action.payload;
-    },
-    [deletePost.rejected]: (state, action) => {
+    })
+    .addCase(getPost.rejected, (state, action) => {
       state.loading = false;
-    },
+    })
 
-    [getPost.pending]: (state, action) => {
+    .addCase(createPost.pending, (state, action) => {
       state.loading = true;
-    },
-    [getPost.fulfilled]: (state, action) => {
+    })
+    .addCase(createPost.fulfilled, (state, action) => {
       state.loading = false;
-      state.post = [action.payload];
-    },
-    [getPost.rejected]: (state, action) => {
+      state.posts = [action.payload];
+    })
+    .addCase(createPost.rejected, (state, action) => {
       state.loading = false;
-    },
+    })
 
-    [createPost.pending]: (state, action) => {
+    .addCase(updatePost.pending, (state, action) => {
       state.loading = true;
-    },
-    [createPost.fulfilled]: (state, action) => {
+    })
+    .addCase(updatePost.fulfilled, (state, action) => {
       state.loading = false;
-      state.post = [action.payload];
-    },
-    [createPost.rejected]: (state, action) => {
+      state.posts = [action.payload];
+    })
+    .addCase(updatePost.rejected, (state, action) => {
       state.loading = false;
-    },
-
-    [updatePost.pending]: (state, action) => {
-      state.loading = true;
-    },
-    [updatePost.fulfilled]: (state, action) => {
-      state.loading = false;
-      state.post = [action.payload];
-    },
-    [updatePost.rejected]: (state, action) => {
-      state.loading = false;
-    },
-  },
+    })
+  }
 });
 
 export default postSlice.reducer;

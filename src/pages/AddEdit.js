@@ -11,16 +11,16 @@ const AddEdit = () => {
     title: "",
     body: "",
   });
-  const { post } = useSelector((state) => state.post);
+  const { posts } = useSelector((state) => state.post);
   const { title, body } = data;
 
   useEffect(() => {
     if (id) {
       dispatch(getPost({ id }));
-       setData({ ...post[0] });
+      setData({ ...posts[id - 1] });
     }
   }, [id]);
-  console.log("edit data", post, data);
+  console.log("edit data", posts, "dataaaaaaa", data);
 
   const onSubmit = () => {
     if (!title && !body) {
@@ -28,13 +28,13 @@ const AddEdit = () => {
     } else {
       if (!id) {
         dispatch(createPost({ data }));
-        setData({body:"", title:""});
+        setData({ body: "", title: "" });
         navigate("/");
       } else {
         dispatch(
-          updatePost({ id: post[0].id, body: data.body, title: data.title })
+          updatePost({ id: posts.id, body: data.body, title: data.title })
         );
-        setData({body:"", title:""});
+        setData({ body: "", title: "" });
         navigate("/");
       }
     }

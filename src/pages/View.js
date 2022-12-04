@@ -3,21 +3,21 @@ import { BrowserRouter, Link, useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { getPost } from '../redux/postSlice'
 const View = () => {
-  const {post} = useSelector((state) => state.post)
+  const {posts} = useSelector((state) => state.post)
   const dispatch = useDispatch();
   const {id} = useParams();
   useEffect(() => {
     dispatch(getPost({id}));
   }, [id]);
-   console.log("view data", post, id)
+   console.log("view data", posts, id)
 
   return (
     <div className='container'>
     <h1>welcome to view page</h1>
       <ul key={id}>
-        <li>{post[0]?.id}</li>
-        <li>{post[0]?.title}</li>
-        <li>{post[0]?.body}</li>
+        <li>{posts[0]?.id}</li>
+        <li>{posts[0]?.title}</li>
+        <li>{posts[0]?.body}</li>
         {/* <li>{contact.status}</li> */}
       </ul>
      
