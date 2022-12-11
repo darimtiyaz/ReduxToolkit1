@@ -1,43 +1,38 @@
 import React, { useState, useEffect } from "react";
-import { createPost, updatePost, getPost } from "../redux/postSlice";
-import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAddContactMutation, useEditContactMutation, useContactQuery } from "../cservices/contactsApi";
 
 const AddEdit = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
-  const [data, setData] = useState({
+  const [addContact] = useAddContactMutation();
+  const [editContact] = useEditContactMutation();
+  const {data} = useContactQuery(id)
+  const [postData, setPostData] = useState({
     title: "",
-    body: "",
+    body: ""
   });
-  const { posts } = useSelector((state) => state.post);
-  const { title, body } = data;
+  const { title, body } = postData;
 
   useEffect(() => {
     if (id) {
-      dispatch(getPost({ id }));
+      setPostData({...postData, title:data?.title, body:data?.body });
     }
-  }, [id]);
+  }, [id, data]);
+  console.log("edit data", "dataaaaaaa", data);
 
-  useEffect(()=>{
-    setData({ ...posts[id - 1] });
-  }, [posts])
-  console.log("edit data", posts, "dataaaaaaa", data);
-
-  const onSubmit = () => {
+  const onSubmit = async (e) => {
+    e.preventDefault();
     if (!title && !body) {
       alert("plz fill the data");
     } else {
       if (!id) {
-        dispatch(createPost({ data }));
-        setData({ body: "", title: "" });
+        await addContact({ postData });
+        setPostData({ title: "", body: ""});
         navigate("/");
       } else {
-        dispatch(
-          updatePost({ id: posts.id, body: data.body, title: data.title })
-        );
-        setData({ body: "", title: "" });
+        await editContact({ id, postData });
+        setPostData({ title: "", body: "" });
         navigate("/");
       }
     }
@@ -64,7 +59,7 @@ const AddEdit = () => {
           placeholder="title"
           name="title"
           value={title}
-          onChange={(e) => setData({ ...data, title: e.target.value })}
+          onChange={(e) => setPostData({ ...postData, title: e.target.value })}
           style={{
             padding: "7px",
             borderRadius: "6px",
@@ -80,10 +75,10 @@ const AddEdit = () => {
           placeholder="body"
           name="body"
           value={body}
-          onChange={(e) => setData({ ...data, body: e.target.value })}
+          onChange={(e) => setPostData({ ...postData, body: e.target.value })}
           style={{
             padding: "7px",
-            borderRadius: "10px",
+            borderRadius: "6px",
             marginBottom: "10px",
             width: "250px",
             height: "100px",
@@ -91,8 +86,8 @@ const AddEdit = () => {
             color: "white",
           }}
         />
+       
         <br />
-        {/* <input type="status" placeholder='status' value={status} onChange={(e)=>setData({status:e.target.value})}/> */}
         <button
           type="submit"
           style={{

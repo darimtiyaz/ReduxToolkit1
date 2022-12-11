@@ -1,0 +1,22 @@
+{
+  "contacts": [
+    {
+     "name":"Adam marcu",
+     "email":"adam@gmail.com",
+     "contact":"8899887766",
+     "id": 1
+    },
+    {
+      "name":"kanna",
+      "email":"kanna@gmail.com",
+      "contact":"8899899008",
+      "id": 2
+     },
+     {
+      "name":"manna",
+      "email":"manna@gmail.com",
+      "contact":"8800997766",
+      "id": 3
+     }
+  ]
+}
